@@ -5,88 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Productivity Planner</title>
   <style>
+    /* Global Styles */
     * {
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
     }
-
     body {
       background: #f5f5f5;
       min-height: 100vh;
     }
 
-    /* Updated Side Counters for Paused and Worked Time */
-    .side-counter {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 20px 30px;
-      font-size: 1.8em;
+    /* Top Bar for Worked and Paused Time */
+    .top-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .top-counter {
+      margin: 0 10px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1.2em;
       font-weight: bold;
-      z-index: 1500;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .side-counter.paused {
-      left: 0;
-      border-radius: 0 10px 10px 0;
-      background: linear-gradient(135deg, #ff7f7f, #ff3b3b);
-      color: #fff;
-    }
-    .side-counter.worked {
-      right: 0;
-      border-radius: 10px 0 0 10px;
+    .top-counter.worked {
       background: linear-gradient(135deg, #74e35b, #00fa9a);
       color: #fff;
     }
-    .side-counter span.icon {
+    .top-counter.paused {
+      background: linear-gradient(135deg, #ff7f7f, #ff3b3b);
+      color: #fff;
+    }
+    .top-counter span.icon {
       font-size: 1.2em;
     }
 
-    .distraction-banner {
-      position: sticky;
-           justify-content: center;
-      top: 0;
-      background: white;
-      padding: 15px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
+    /* Three-Column Layout Below Navbar */
+    .main-container {
       display: flex;
       gap: 20px;
-      flex-wrap: wrap;
-      max-width: 100%;
+      margin: 0 15px;
     }
-
-    .counter-box {
+    /* Ensure each column grows equally */
+    .left, .content, .right {
       flex: 1;
-      min-width: 300px;
-      max-width: 400px;
+      min-width: 250px;
+    }
+
+    /* Left Column: Work Breaks */
+    .left .counter-box {
+            border-radius: 8px;
       padding: 15px;
-      border-radius: 8px;
-      margin: 5px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-
     .work-counter {
-      background: #e8f0fe;
       border: 2px solid #1a73e8;
+      background: #e8f0fe;
     }
 
+    /* Right Column: Distractions */
+    .right .counter-box {
+     
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
     .personal-counter {
-      background: #fce8e6;
       border: 2px solid #d93025;
+      background: #fce8e6;
     }
 
+    /* Shared Sidebar/Counter Box Styles */
     .counter-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 10px;
     }
-
     .counter-title {
       font-weight: bold;
       font-size: 1.1em;
@@ -94,21 +100,18 @@
       align-items: center;
       gap: 8px;
     }
-
     .counter-count {
       background: white;
       padding: 2px 10px;
       border-radius: 15px;
       font-weight: bold;
     }
-
     .reason-list {
       max-height: 150px;
       overflow-y: auto;
       margin-top: 10px;
       padding-right: 5px;
     }
-
     .reason-item {
       padding: 8px;
       margin: 5px 0;
@@ -116,23 +119,20 @@
       font-size: 0.9em;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
     }
-
     .work-reason-item {
       background: #d2e3fc;
     }
-
     .personal-reason-item {
       background: #f6c9c5;
     }
-
     .reason-time {
       font-size: 0.8em;
       color: #666;
       margin-left: 10px;
+      line-height: 1.3;
     }
-
     .reset-btn {
       border: none;
       padding: 4px 12px;
@@ -140,39 +140,34 @@
       cursor: pointer;
       font-size: 0.9em;
     }
-
     .work-reset {
       background: #1a73e8;
       color: white;
     }
-
     .personal-reset {
       background: #d93025;
       color: white;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 0 15px;
+    /* Center Column: Planner */
+    .content {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-
     .input-section {
       background: white;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       margin-bottom: 20px;
-      position: relative;
-      z-index: 1;
     }
-
     .input-group {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-
     input[type="text"],
     input[type="number"] {
       flex: 1;
@@ -182,7 +177,6 @@
       border-radius: 5px;
       font-size: 16px;
     }
-
     .primary-btn {
       background: #1a73e8;
       color: white;
@@ -192,15 +186,13 @@
       cursor: pointer;
       min-width: 120px;
     }
-
     .task-list {
       background: white;
       border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       padding: 20px;
       margin-bottom: 20px;
     }
-
     .task-item {
       display: flex;
       align-items: center;
@@ -211,12 +203,10 @@
       gap: 15px;
       flex-wrap: wrap;
     }
-
     .task-info {
       flex: 1;
       min-width: 200px;
     }
-
     .timer {
       font-weight: bold;
       font-size: 1.2em;
@@ -224,7 +214,6 @@
       min-width: 80px;
       text-align: center;
     }
-
     .pause-btn {
       background: #fbbc05;
       color: white;
@@ -233,7 +222,6 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .done-btn {
       background: #34a853;
       color: white;
@@ -242,22 +230,18 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .expired {
       background: #fce8e6;
       border-left: 4px solid #d93025;
     }
-
     .completed {
       background: #e6f4ea;
       border-left: 4px solid #34a853;
     }
-
     .section-title {
       margin: 0 0 15px 0;
       color: #1a73e8;
     }
-
     .motivation {
       text-align: center;
       padding: 10px;
@@ -266,13 +250,13 @@
       margin: 10px 0;
     }
 
+    /* Responsive Styles */
     @media (max-width: 768px) {
-      .distraction-banner {
-        position: static;
+      .main-container {
         flex-direction: column;
       }
-      .counter-box {
-        max-width: 100%;
+      .left, .content, .right {
+        width: 100%;
       }
       .input-group {
         flex-direction: column;
@@ -293,6 +277,7 @@
       }
     }
 
+    /* Modal Styles */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -305,7 +290,6 @@
       align-items: center;
       z-index: 2000;
     }
-
     .modal-content {
       background: white;
       padding: 25px;
@@ -313,7 +297,6 @@
       width: 90%;
       max-width: 400px;
     }
-
     .reason-input {
       width: 100%;
       padding: 10px;
@@ -323,7 +306,6 @@
       resize: vertical;
       min-height: 80px;
     }
-
     .category-select {
       width: 100%;
       padding: 10px;
@@ -331,13 +313,11 @@
       border: 1px solid #ddd;
       border-radius: 5px;
     }
-
     .modal-buttons {
       display: flex;
       gap: 10px;
       margin-top: 15px;
     }
-
     .modal-btn {
       flex: 1;
       padding: 10px;
@@ -346,12 +326,10 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     .confirm-btn {
       background: #1a73e8;
       color: white;
     }
-
     .cancel-btn {
       background: #f0f0f0;
       color: #555;
@@ -359,58 +337,70 @@
   </style>
 </head>
 <body>
-  <!-- Side Counters for Paused and Worked Time -->
-  <div id="pausedTimeDisplay" class="side-counter paused">
-    <span class="icon">⏸</span> Paused: 0:00
-  </div>
-  <div id="workedTimeDisplay" class="side-counter worked">
-    <span class="icon">💪</span> Worked: 0:00
-  </div>
-
-  <div class="distraction-banner">
-    <div class="counter-box work-counter">
-      <div class="counter-header">
-        <span class="counter-title">🏢 Work Breaks</span>
-        <span class="counter-count" id="workCount">0</span>
-      </div>
-      <div class="reason-list" id="workReasons"></div>
-      <button class="reset-btn work-reset" onclick="resetReasons('work')">Reset</button>
+  <!-- Top Bar for Worked and Paused Time -->
+  <header class="top-bar">
+    <div id="workedTimeDisplay" class="top-counter worked">
+      <span class="icon">💪</span> Worked: 0:00
     </div>
-
-    <div class="counter-box personal-counter">
-      <div class="counter-header">
-        <span class="counter-title">⚠️ Distractions</span>
-        <span class="counter-count" id="personalCount">0</span>
-      </div>
-      <div class="reason-list" id="personalReasons"></div>
-      <button class="reset-btn personal-reset" onclick="resetReasons('personal')">Reset</button>
+    <div id="pausedTimeDisplay" class="top-counter paused">
+      <span class="icon">⏸</span> Paused: 0:00
     </div>
-  </div>
+  </header>
 
-  <div class="container">
-    <h1 class="section-title">Latnar - the daily planner</h1>
-    <div class="input-section">
-      <div class="input-group">
-        <input type="text" id="taskInput" placeholder="Enter task name..." />
-        <input type="number" id="timeInput" placeholder="Minutes" min="1" />
-        <button class="primary-btn" onclick="addTask()">Add Task</button>
+  <!-- Main Three-Column Container -->
+  <div class="main-container">
+    <!-- Left Column: Work Breaks -->
+    <div class="left">
+      <div class="counter-box work-counter">
+        <div class="counter-header">
+          <span class="counter-title">🏢 Work Breaks</span>
+          <span class="counter-count" id="workCount">0</span>
+        </div>
+        <div class="reason-list" id="workReasons"></div>
+        <button class="reset-btn work-reset" onclick="resetReasons('work')">Reset</button>
       </div>
     </div>
 
-    <div class="task-list">
-      <h2 class="section-title">Active Tasks</h2>
-      <div id="activeTasks"></div>
+    <!-- Center Column: Planner -->
+    <div class="content">
+      <div class="container">
+        <h1 class="section-title">Latnar - the daily planner</h1>
+        <div class="input-section">
+          <div class="input-group">
+            <input type="text" id="taskInput" placeholder="Enter task name..." />
+            <input type="number" id="timeInput" placeholder="Minutes" min="1" />
+            <button class="primary-btn" onclick="addTask()">Add Task</button>
+          </div>
+        </div>
+
+        <div class="task-list">
+          <h2 class="section-title">Active Tasks</h2>
+          <div id="activeTasks"></div>
+        </div>
+
+        <div class="task-list completed">
+          <h2 class="section-title">Completed Tasks 🌟</h2>
+          <div class="motivation" id="motivationText">You're doing great! Keep going! 💪</div>
+          <div id="completedTasks"></div>
+        </div>
+
+        <div class="task-list expired">
+          <h2 class="section-title">Expired Tasks</h2>
+          <div id="expiredTasks"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="task-list completed">
-      <h2 class="section-title">Completed Tasks 🌟</h2>
-      <div class="motivation" id="motivationText">You're doing great! Keep going! 💪</div>
-      <div id="completedTasks"></div>
-    </div>
-
-    <div class="task-list expired">
-      <h2 class="section-title">Expired Tasks</h2>
-      <div id="expiredTasks"></div>
+    <!-- Right Column: Distractions -->
+    <div class="right">
+      <div class="counter-box personal-counter">
+        <div class="counter-header">
+          <span class="counter-title">⚠️ Distractions</span>
+          <span class="counter-count" id="personalCount">0</span>
+        </div>
+        <div class="reason-list" id="personalReasons"></div>
+        <button class="reset-btn personal-reset" onclick="resetReasons('personal')">Reset</button>
+      </div>
     </div>
   </div>
 
@@ -430,21 +420,35 @@
       "Productivity champion! 🏆"
     ];
 
+    // Global variable to mark when all tasks are paused (for global pause tracking)
+    let allPausedStart = null;
+
+    // Update the Work Breaks or Distractions display
     function updateDistractionDisplay() {
       document.getElementById('workCount').textContent = workPauses.length;
       document.getElementById('personalCount').textContent = personalPauses.length;
-      updateReasonList('workReasons', workPauses, '#1a73e8');
-      updateReasonList('personalReasons', personalPauses, '#d93025');
+      updateReasonList('workReasons', workPauses);
+      updateReasonList('personalReasons', personalPauses);
     }
 
-    function updateReasonList(elementId, reasons, color) {
+    // Build the HTML for a list of reasons (showing pause time, resume time, and duration)
+    function updateReasonList(elementId, reasons) {
       const list = document.getElementById(elementId);
-      list.innerHTML = reasons.map(reason => `
-        <div class="reason-item ${elementId === 'workReasons' ? 'work-reason-item' : 'personal-reason-item'}">
-          <div>${reason.text}</div>
-          <div class="reason-time">${reason.time}</div>
-        </div>
-      `).join('');
+      list.innerHTML = reasons.map(reason => {
+        let additionalInfo = `<div>Paused at: ${reason.pauseTimeStr}</div>`;
+        if (reason.resumeTime) {
+          additionalInfo += `<div>Resumed at: ${reason.resumeTime}</div>`;
+          additionalInfo += `<div>Duration: ${formatTime(reason.pauseDuration)}</div>`;
+        } else {
+          additionalInfo += `<div>Resumed at: In progress</div>`;
+        }
+        return `
+          <div class="reason-item ${elementId === 'workReasons' ? 'work-reason-item' : 'personal-reason-item'}">
+            <div><strong>Reason:</strong> ${reason.text}</div>
+            <div class="reason-time">${additionalInfo}</div>
+          </div>
+        `;
+      }).join('');
     }
 
     function resetReasons(type) {
@@ -456,6 +460,7 @@
       updateDistractionDisplay();
     }
 
+    // Show the modal to collect a reason for pausing
     function showReasonModal(taskId) {
       const modal = document.createElement('div');
       modal.className = 'modal-overlay';
@@ -481,6 +486,7 @@
       document.body.appendChild(modal);
     }
 
+    // Handle pause reason submission: create a reason object with pause time info and taskId.
     function handlePause(taskId) {
       const category = document.getElementById('pauseCategory').value;
       const reasonText = document.getElementById('pauseReason').value.trim();
@@ -490,10 +496,15 @@
         return;
       }
 
+      const now = new Date();
       const reason = {
         text: reasonText,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        category: category
+        pauseTimeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        pauseTimestamp: now.getTime(),  // for computing duration later
+        category: category,
+        taskId: taskId,
+        resumeTime: null,
+        pauseDuration: null
       };
 
       if (category === 'work') {
@@ -512,6 +523,7 @@
       if (modal) modal.remove();
     }
 
+    // Add a new task and start its timer
     function addTask() {
       const taskInput = document.getElementById('taskInput');
       const timeInput = document.getElementById('timeInput');
@@ -534,30 +546,30 @@
       `;
 
       document.getElementById('activeTasks').appendChild(taskElement);
-      startTimer(taskId, totalSeconds);
+      // Store timer information (including the planned duration)
+      timers[taskId] = {
+        interval: setInterval(() => {
+          remaining--;
+          totalWorkedSeconds++;
+          updateSideCounters();
+          updateTimerDisplay(taskId, remaining);
+          if (remaining <= 0) {
+            expireTask(taskId);
+          }
+        }, 1000),
+        remaining: totalSeconds,
+        paused: false,
+        planned: totalSeconds
+      };
+
+      // Closure variable to track remaining time for this timer
+      let remaining = totalSeconds;
 
       taskInput.value = '';
       timeInput.value = '';
     }
 
-    function startTimer(taskId, duration) {
-      let remaining = duration;
-      timers[taskId] = {
-        interval: setInterval(() => {
-          remaining--;
-          totalWorkedSeconds++; // Increment worked seconds for each running timer tick
-          updateSideCounters();
-          updateTimerDisplay(taskId, remaining);
-
-          if (remaining <= 0) {
-            expireTask(taskId);
-          }
-        }, 1000),
-        remaining: duration,
-        paused: false
-      };
-    }
-
+    // Toggle between pausing and resuming a task
     function togglePause(taskId) {
       const timer = timers[taskId];
       if (!timer.paused) {
@@ -567,35 +579,56 @@
       }
     }
 
+    // Pause the timer for a task (stop its interval and mark it as paused)
     function pauseTimer(taskId) {
       const timer = timers[taskId];
       clearInterval(timer.interval);
       timer.paused = true;
-      timer.pauseStart = Date.now(); // Record when the pause started
       document.querySelector(`#task-${taskId} .pause-btn`).textContent = 'Resume';
+      checkAllPaused();
     }
 
+    // Resume a paused task.
+    // This function updates any pause reason objects (matching the task) with resume time and calculates pause duration.
     function resumeTimer(taskId) {
       const timer = timers[taskId];
-      // Calculate the paused duration in seconds and add it to total paused time
-      const pausedDuration = Math.floor((Date.now() - timer.pauseStart) / 1000);
-      totalPausedSeconds += pausedDuration;
-      updateSideCounters();
+      if (allPausedStart !== null) {
+        let pausedDuration = Math.floor((Date.now() - allPausedStart) / 1000);
+        totalPausedSeconds += pausedDuration;
+        allPausedStart = null;
+        updateSideCounters();
+      }
+      // Update the corresponding pause reason(s) for this task
+      const now = new Date();
+      const formattedResume = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      [workPauses, personalPauses].forEach(reasonArray => {
+        reasonArray.forEach(reason => {
+          if (reason.taskId === taskId && !reason.resumeTime) {
+            reason.resumeTime = formattedResume;
+            reason.pauseDuration = Math.floor((now.getTime() - reason.pauseTimestamp) / 1000);
+          }
+        });
+      });
+      updateDistractionDisplay();
+
+      // Resume the timer for the task.
+      let remaining = timer.remaining;
       timer.interval = setInterval(() => {
-        timer.remaining--;
+        remaining--;
+        timer.remaining = remaining;
         totalWorkedSeconds++;
         updateSideCounters();
-        updateTimerDisplay(taskId, timer.remaining);
-
-        if (timer.remaining <= 0) {
+        updateTimerDisplay(taskId, remaining);
+        if (remaining <= 0) {
           expireTask(taskId);
         }
       }, 1000);
       timer.paused = false;
-      timer.pauseStart = null;
       document.querySelector(`#task-${taskId} .pause-btn`).textContent = 'Pause';
+      checkAllPaused();
     }
 
+    // Update the timer display for a given task (mm:ss format)
     function updateTimerDisplay(taskId, seconds) {
       const timerElement = document.querySelector(`#task-${taskId} .timer`);
       if (timerElement) {
@@ -603,47 +636,64 @@
       }
     }
 
+    // When a task is completed, display an encouraging message in the Completed Tasks section.
     function completeTask(taskId) {
       const timer = timers[taskId];
-      // If the task is paused at completion, add the pending pause duration
-      if (timer.paused && timer.pauseStart) {
-        const pausedDuration = Math.floor((Date.now() - timer.pauseStart) / 1000);
-        totalPausedSeconds += pausedDuration;
-        updateSideCounters();
-      }
       clearInterval(timer.interval);
+
+      // Calculate saved time (if any) based on the remaining seconds.
+      let savedSeconds = timer.remaining;
+      let savedText = "";
+      if (savedSeconds > 0) {
+        const savedMinutes = Math.floor(savedSeconds / 60);
+        const savedSec = savedSeconds % 60;
+        savedText = `Finished ${savedMinutes} minute${savedMinutes !== 1 ? 's' : ''}`;
+        if (savedSec > 0) {
+          savedText += ` and ${savedSec} second${savedSec !== 1 ? 's' : ''}`;
+        }
+        savedText += " early!";
+      } else {
+        savedText = "Finished on time!";
+      }
+
       const taskElement = document.getElementById(`task-${taskId}`);
       taskElement.classList.add('completed');
+
+      // Append the saved time message to the task info.
+      const savedDiv = document.createElement('div');
+      savedDiv.style.fontStyle = "italic";
+      savedDiv.style.marginTop = "8px";
+      savedDiv.textContent = savedText;
+      taskElement.querySelector('.task-info').appendChild(savedDiv);
+
+      // Remove the Pause and Done buttons.
       taskElement.querySelectorAll('button').forEach(btn => btn.remove());
       document.getElementById('completedTasks').prepend(taskElement);
       updateMotivation();
       delete timers[taskId];
+      checkAllPaused();
     }
 
+    // When a task expires (time runs out), move it to the Expired Tasks list.
     function expireTask(taskId) {
       const timer = timers[taskId];
-      // If the task is paused at expiration, add the pending pause duration
-      if (timer.paused && timer.pauseStart) {
-        const pausedDuration = Math.floor((Date.now() - timer.pauseStart) / 1000);
-        totalPausedSeconds += pausedDuration;
-        updateSideCounters();
-      }
       clearInterval(timer.interval);
       const taskElement = document.getElementById(`task-${taskId}`);
       taskElement.classList.add('expired');
       taskElement.querySelectorAll('button').forEach(btn => btn.remove());
       document.getElementById('expiredTasks').prepend(taskElement);
       delete timers[taskId];
+      checkAllPaused();
     }
 
-    // Formats seconds into mm:ss for task timers
+    // Formats seconds into mm:ss (for task timers and pause durations)
     function formatTime(seconds) {
       const mins = Math.floor(seconds / 60);
       const secs = seconds % 60;
       return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Formats seconds into hrs:mins for the side counters
+    // Formats seconds into hrs:mins (for the top counters)
     function formatTimeHrsMins(seconds) {
       const totalMinutes = Math.floor(seconds / 60);
       const hours = Math.floor(totalMinutes / 60);
@@ -651,15 +701,40 @@
       return `${hours}:${minutes.toString().padStart(2, '0')}`;
     }
 
-    function updateMotivation() {
-      const motivationText = document.getElementById('motivationText');
-      motivationText.textContent = motivations[Math.floor(Math.random() * motivations.length)];
-    }
-
-    // Update the side counter displays for worked and paused time
+    // Update the top counters (Worked and Paused times)
     function updateSideCounters() {
       document.getElementById('workedTimeDisplay').textContent = '💪 Worked: ' + formatTimeHrsMins(totalWorkedSeconds);
       document.getElementById('pausedTimeDisplay').textContent = '⏸ Paused: ' + formatTimeHrsMins(totalPausedSeconds);
+    }
+
+    // Checks if all active tasks are paused.
+    // If yes, mark the start of the global pause period.
+    // If not and a global pause was active, add its duration.
+    function checkAllPaused() {
+      const activeTaskIds = Object.keys(timers);
+      if (activeTaskIds.length === 0) {
+        allPausedStart = null;
+        return;
+      }
+      const allPaused = activeTaskIds.every(id => timers[id].paused);
+      if (allPaused) {
+        if (!allPausedStart) {
+          allPausedStart = Date.now();
+        }
+      } else {
+        if (allPausedStart) {
+          const pausedDuration = Math.floor((Date.now() - allPausedStart) / 1000);
+          totalPausedSeconds += pausedDuration;
+          allPausedStart = null;
+          updateSideCounters();
+        }
+      }
+    }
+
+    // Update a random motivational message
+    function updateMotivation() {
+      const motivationText = document.getElementById('motivationText');
+      motivationText.textContent = motivations[Math.floor(Math.random() * motivations.length)];
     }
   </script>
 </body>
