@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Productivity Planner</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    /* Updated Side Counters for Paused and Worked Time */
+    .side-counter {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 20px 30px;
+      font-size: 1.8em;
+      font-weight: bold;
+      z-index: 1500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .side-counter.paused {
+      left: 0;
+      border-radius: 0 10px 10px 0;
+      background: linear-gradient(135deg, #ff7f7f, #ff3b3b);
+      color: #fff;
+    }
+    .side-counter.worked {
+      right: 0;
+      border-radius: 10px 0 0 10px;
+      background: linear-gradient(135deg, #74e35b, #00fa9a);
+      color: #fff;
+    }
+    .side-counter span.icon {
+      font-size: 1.2em;
+    }
+
+    .distraction-banner {
+      position: sticky;
+           justify-content: center;
+      top: 0;
+      background: white;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+
+    .counter-box {
+      flex: 1;
+      min-width: 300px;
+      max-width: 400px;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 5px;
+    }
+
+    .work-counter {
+      background: #e8f0fe;
+      border: 2px solid #1a73e8;
+    }
+
+    .personal-counter {
+      background: #fce8e6;
+      border: 2px solid #d93025;
+    }
+
+    .counter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .counter-title {
+      font-weight: bold;
+      font-size: 1.1em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .counter-count {
+      background: white;
+      padding: 2px 10px;
+      border-radius: 15px;
+      font-weight: bold;
+    }
+
+    .reason-list {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 10px;
+      padding-right: 5px;
+    }
+
+    .reason-item {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 4px;
+      font-size: 0.9em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .work-reason-item {
+      background: #d2e3fc;
+    }
+
+    .personal-reason-item {
+      background: #f6c9c5;
+    }
+
+    .reason-time {
+      font-size: 0.8em;
+      color: #666;
+      margin-left: 10px;
+    }
+
+    .reset-btn {
+      border: none;
+      padding: 4px 12px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+
+    .work-reset {
+      background: #1a73e8;
+      color: white;
+    }
+
+    .personal-reset {
+      background: #d93025;
+      color: white;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .input-section {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .primary-btn {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      min-width: 120px;
+    }
+
+    .task-list {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin: 10px 0;
+      background: #f8f9fa;
+      border-radius: 5px;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .task-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .timer {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #1a73e8;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .pause-btn {
+      background: #fbbc05;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .done-btn {
+      background: #34a853;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .expired {
+      background: #fce8e6;
+      border-left: 4px solid #d93025;
+    }
+
+    .completed {
+      background: #e6f4ea;
+      border-left: 4px solid #34a853;
+    }
+
+    .section-title {
+      margin: 0 0 15px 0;
+      color: #1a73e8;
+    }
+
+    .motivation {
+      text-align: center;
+      padding: 10px;
+      background: #e6f4ea;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 768px) {
+      .distraction-banner {
+        position: static;
+        flex-direction: column;
+      }
+      .counter-box {
+        max-width: 100%;
+      }
+      .input-group {
+        flex-direction: column;
+      }
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+      }
+      .primary-btn {
+        width: 100%;
+      }
+      .task-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .timer {
+        text-align: left;
+      }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .reason-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .category-select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .confirm-btn {
+      background: #1a73e8;
+      color: white;
+    }
+
+    .cancel-btn {
+      background: #f0f0f0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <!-- Side Counters for Paused and Worked Time -->
+  <div id="pausedTimeDisplay" class="side-counter paused">
+    <span class="icon">⏸</span> Paused: 0:00
+  </div>
+  <div id="workedTimeDisplay" class="side-counter worked">
+    <span class="icon">💪</span> Worked: 0:00
+  </div>
+
+  <div class="distraction-banner">
+    <div class="counter-box work-counter">
+      <div class="counter-header">
+        <span class="counter-title">🏢 Work Breaks</span>
+        <span class="counter-count" id="workCount">0</span>
+      </div>
+      <div class="reason-list" id="workReasons"></div>
+      <button class="reset-btn work-reset" onclick="resetReasons('work')">Reset</button>
+    </div>
+
+    <div class="counter-box personal-counter">
+      <div class="counter-header">
+        <span class="counter-title">⚠️ Distractions</span>
+        <span class="counter-count" id="personalCount">0</span>
+      </div>
+      <div class="reason-list" id="personalReasons"></div>
+      <button class="reset-btn personal-reset" onclick="resetReasons('personal')">Reset</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1 class="section-title">Latnar - the daily planner</h1>
+    <div class="input-section">
+      <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Enter task name..." />
+        <input type="number" id="timeInput" placeholder="Minutes" min="1" />
+        <button class="primary-btn" onclick="addTask()">Add Task</button>
+      </div>
+    </div>
+
+    <div class="task-list">
+      <h2 class="section-title">Active Tasks</h2>
+      <div id="activeTasks"></div>
+    </div>
+
+    <div class="task-list completed">
+      <h2 class="section-title">Completed Tasks 🌟</h2>
+      <div class="motivation" id="motivationText">You're doing great! Keep going! 💪</div>
+      <div id="completedTasks"></div>
+    </div>
+
+    <div class="task-list expired">
+      <h2 class="section-title">Expired Tasks</h2>
+      <div id="expiredTasks"></div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Global timer storage and accumulators for worked and paused time (in seconds)
+    let timers = {};
+    let workPauses = [];
+    let personalPauses = [];
+    let totalWorkedSeconds = 0;
+    let totalPausedSeconds = 0;
+    const motivations = [
+      "Amazing productivity! 🚀",
+      "Task conquered! 🎉",
+      "You're unstoppable! 💥",
+      "Great work! Keep it up! 👏",
+      "Productivity champion! 🏆"
+    ];
+
+    function updateDistractionDisplay() {
+      document.getElementById('workCount').textContent = workPauses.length;
+      document.getElementById('personalCount').textContent = personalPauses.length;
+      updateReasonList('workReasons', workPauses, '#1a73e8');
+      updateReasonList('personalReasons', personalPauses, '#d93025');
+    }
+
+    function updateReasonList(elementId, reasons, color) {
+      const list = document.getElementById(elementId);
+      list.innerHTML = reasons.map(reason => `
+        <div class="reason-item ${elementId === 'workReasons' ? 'work-reason-item' : 'personal-reason-item'}">
+          <div>${reason.text}</div>
+          <div class="reason-time">${reason.time}</div>
+        </div>
+      `).join('');
+    }
+
+    function resetReasons(type) {
+      if (type === 'work') {
+        workPauses = [];
+      } else {
+        personalPauses = [];
+      }
+      updateDistractionDisplay();
+    }
+
+    function showReasonModal(taskId) {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <h3>Why are you pausing?</h3>
+          <select class="category-select" id="pauseCategory">
+            <option value="work">Work-related Break</option>
+            <option value="personal">Personal Distraction</option>
+          </select>
+          <textarea 
+            class="reason-input" 
+            id="pauseReason" 
+            placeholder="Describe the reason (required)"
+            required
+          ></textarea>
+          <div class="modal-buttons">
+            <button class="modal-btn confirm-btn" onclick="handlePause(${taskId})">Submit</button>
+            <button class="modal-btn cancel-btn" onclick="closeModal()">Cancel</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function handlePause(taskId) {
+      const category = document.getElementById('pauseCategory').value;
+      const reasonText = document.getElementById('pauseReason').value.trim();
+
+      if (!reasonText) {
+        alert('Please enter a reason for pausing!');
+        return;
+      }
+
+      const reason = {
+        text: reasonText,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        category: category
+      };
+
+      if (category === 'work') {
+        workPauses.push(reason);
+      } else {
+        personalPauses.push(reason);
+      }
+
+      pauseTimer(taskId);
+      closeModal();
+      updateDistractionDisplay();
+    }
+
+    function closeModal() {
+      const modal = document.querySelector('.modal-overlay');
+      if (modal) modal.remove();
+    }
+
+    function addTask() {
+      const taskInput = document.getElementById('taskInput');
+      const timeInput = document.getElementById('timeInput');
+
+      if (!taskInput.value || !timeInput.value) return;
+
+      const taskId = Date.now();
+      const totalSeconds = parseInt(timeInput.value) * 60;
+
+      const taskElement = document.createElement('div');
+      taskElement.className = 'task-item';
+      taskElement.id = `task-${taskId}`;
+      taskElement.innerHTML = `
+        <div class="task-info">
+          <h3>${taskInput.value}</h3>
+          <div class="timer">${formatTime(totalSeconds)}</div>
+        </div>
+        <button class="pause-btn" onclick="togglePause(${taskId})">Pause</button>
+        <button class="done-btn" onclick="completeTask(${taskId})">Done</button>
+      `;
+
+      document.getElementById('activeTasks').appendChild(taskElement);
+      startTimer(taskId, totalSeconds);
+
+      taskInput.value = '';
+      timeInput.value = '';
+    }
+
+    function startTimer(taskId, duration) {
+      let remaining = duration;
+      timers[taskId] = {
+        interval: setInterval(() => {
+          remaining--;
+          totalWorkedSeconds++; // Increment worked seconds for each running timer tick
+          updateSideCounters();
+          updateTimerDisplay(taskId, remaining);
+
+          if (remaining <= 0) {
+            expireTask(taskId);
+          }
+        }, 1000),
+        remaining: duration,
+        paused: false
+      };
+    }
+
+    function togglePause(taskId) {
+      const timer = timers[taskId];
+      if (!timer.paused) {
+        showReasonModal(taskId);
+      } else {
+        resumeTimer(taskId);
+      }
+    }
+
+    function pauseTimer(taskId) {
+      const timer = timers[taskId];
+      clearInterval(timer.interval);
+      timer.paused = true;
+      timer.pauseStart = Date.now(); // Record when the pause started
+      document.querySelector(`#task-${taskId} .pause-btn`).textContent = 'Resume';
+    }
+
+    function resumeTimer(taskId) {
+      const timer = timers[taskId];
+      // Calculate the paused duration in seconds and add it to total paused time
+      const pausedDuration = Math.floor((Date.now() - timer.pauseStart) / 1000);
+      totalPausedSeconds += pausedDuration;
+      updateSideCounters();
+      timer.interval = setInterval(() => {
+        timer.remaining--;
+        totalWorkedSeconds++;
+        updateSideCounters();
+        updateTimerDisplay(taskId, timer.remaining);
+
+        if (timer.remaining <= 0) {
+          expireTask(taskId);
+        }
+      }, 1000);
+      timer.paused = false;
+      timer.pauseStart = null;
+      document.querySelector(`#task-${taskId} .pause-btn`).textContent = 'Pause';
+    }
+
+    function updateTimerDisplay(taskId, seconds) {
+      const timerElement = document.querySelector(`#task-${taskId} .timer`);
+      if (timerElement) {
+        timerElement.textContent = formatTime(seconds);
+      }
+    }
+
+    function completeTask(taskId) {
+      const timer = timers[taskId];
+      // If the task is paused at completion, add the pending pause duration
+      if (timer.paused && timer.pauseStart) {
+        const pausedDuration = Math.floor((Date.now() - timer.pauseStart) / 1000);
+        totalPausedSeconds += pausedDuration;
+        updateSideCounters();
+      }
+      clearInterval(timer.interval);
+      const taskElement = document.getElementById(`task-${taskId}`);
+      taskElement.classList.add('completed');
+      taskElement.querySelectorAll('button').forEach(btn => btn.remove());
+      document.getElementById('completedTasks').prepend(taskElement);
+      updateMotivation();
+      delete timers[taskId];
+    }
+
+    function expireTask(taskId) {
+      const timer = timers[taskId];
+      // If the task is paused at expiration, add the pending pause duration
+      if (timer.paused && timer.pauseStart) {
+        const pausedDuration = Math.floor((Date.now() - timer.pauseStart) / 1000);
+        totalPausedSeconds += pausedDuration;
+        updateSideCounters();
+      }
+      clearInterval(timer.interval);
+      const taskElement = document.getElementById(`task-${taskId}`);
+      taskElement.classList.add('expired');
+      taskElement.querySelectorAll('button').forEach(btn => btn.remove());
+      document.getElementById('expiredTasks').prepend(taskElement);
+      delete timers[taskId];
+    }
+
+    // Formats seconds into mm:ss for task timers
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Formats seconds into hrs:mins for the side counters
+    function formatTimeHrsMins(seconds) {
+      const totalMinutes = Math.floor(seconds / 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${hours}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    function updateMotivation() {
+      const motivationText = document.getElementById('motivationText');
+      motivationText.textContent = motivations[Math.floor(Math.random() * motivations.length)];
+    }
+
+    // Update the side counter displays for worked and paused time
+    function updateSideCounters() {
+      document.getElementById('workedTimeDisplay').textContent = '💪 Worked: ' + formatTimeHrsMins(totalWorkedSeconds);
+      document.getElementById('pausedTimeDisplay').textContent = '⏸ Paused: ' + formatTimeHrsMins(totalPausedSeconds);
+    }
+  </script>
+</body>
+</html>
